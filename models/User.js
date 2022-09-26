@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  companies: [String],
   createdOn: {
     type: String,
     default: new Date(),

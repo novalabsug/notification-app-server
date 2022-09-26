@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 
 import routes from "./router/Routes.js";
+import apiRoutes from "./api/Routes.js";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
 app.use("/", routes);
+app.use("/api", apiRoutes);
 
 const CONNECTION_URL = "mongodb://127.0.0.1:27017/notification-app";
 
