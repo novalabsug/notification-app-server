@@ -123,16 +123,21 @@ export const signinUserPost = async (req, res) => {
 
     if (user) {
       const token = createToken(user._id);
-      // res.cookie("notification_app_JWT_secret", token, {
-      //   httpOnly: true,
-      //   maxAge: maxAge * 1000,
-      //   secure: true,
-      // });
-      res.status(200).json({ result: user, token });
+
+      res.cookie("notification_app_JWT_secret", token, {
+        httpOnly: true,
+        maxAge: maxAge * 1000,
+        secure: true,
+      });
+
+      res.status(200).json({
+        result: { id: user._id, username: user.username, gender: user.gender },
+        token,
+      });
     }
   } catch (err) {
     const error = handleErrors(err);
-    res.status(400).json({ error });
+    res.status(200).json({ error });
   }
 };
 
