@@ -89,11 +89,10 @@ export const registerUserPost = async (req, res) => {
     });
 
     if (!hasAccount) {
-      res.status(200).json({ error: "Account not found" });
+      res.status(200).json({ error: "Invalid Account ID" });
     } else {
       const newUser = new User({
         username: "@" + userReq.username,
-        gender: userReq.gender,
         companies: [userFound.company],
         password: await userReq.password,
       });
@@ -107,7 +106,13 @@ export const registerUserPost = async (req, res) => {
       if (newUser) {
         const user = newUser;
         const token = createToken(user._id);
-        res.status(200).json({ result: user, token });
+        res.status(200).json({
+          result: {
+            id: user._id,
+            username: user.username,
+          },
+          token,
+        });
       }
     }
   } catch (error) {
@@ -125,13 +130,12 @@ export const signinUserPost = async (req, res) => {
       const token = createToken(user._id);
 
       res.cookie("notification_app_JWT_secret", token, {
-        httpOnly: true,
         maxAge: maxAge * 1000,
         secure: true,
       });
 
       res.status(200).json({
-        result: { id: user._id, username: user.username, gender: user.gender },
+        result: { id: user._id, username: user.username },
         token,
       });
     }
@@ -231,7 +235,7 @@ export const fetchCompanyPost = async (req, res) => {
   try {
     const data = req.body;
     const Companies = [];
-    const user = await User.findOne({ _id: data._id });
+    const user = await User.findOne({ _id: data.id });
 
     for (let i = 0; i < user.companies.length; i++) {
       let result = await Company.findOne({ _id: user.companies[i] });
@@ -269,8 +273,6 @@ export const fetchCompanyMessagesPost = async (req, res) => {
       Chats = [{ emptyChat: "Chat is empty" }];
     }
 
-    console.log(Mails);
-
     res.status(200).json({ Mails, Chats });
   } catch (err) {
     const error = handleErrors(err);
@@ -300,7 +302,7 @@ export const addCompany = async (req, res) => {
     });
 
     if (ID == "")
-      return res.status(400).json({ addCompanyError: "Account ID is invalid" });
+      return res.status(200).json({ addCompanyError: "Account ID is invalid" });
 
     const user = await User.findOne({ _id: userId });
 
@@ -324,7 +326,7 @@ export const addCompany = async (req, res) => {
 
 export const mailDeliveryPost = async (req, res) => {
   try {
-    const { to, from, title, message, apiKey } = req.query;
+    const { to, from, title, message, apiKey } = req.body;
 
     //  verify whether company is valid
     const companyVar1 = await Company.findOne({ companyUsername: from });
@@ -360,8 +362,6 @@ export const mailDeliveryPost = async (req, res) => {
     if (mail) {
       res.status(200).json({ msg: "Operation successful" });
     }
-
-    console.log(req.query);
   } catch (error) {
     res.status(400).json({ error });
     console.log(error);

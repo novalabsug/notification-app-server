@@ -6,6 +6,6 @@ import { verifyApiKey } from "../middleware/middleware.js";
 const router = Router();
 
 router.get("/register", verifyApiKey, createUserPost);
-router.get("/mail_send", mailDeliveryPost);
+router.post("/mail_send", mailDeliveryPost);
 
 export default router;
