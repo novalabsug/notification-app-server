@@ -1,5 +1,9 @@
 import User from "../models/User.js";
-import { generateApiKey, generateUniqueId } from "../custom/custom.js";
+import {
+  fetchUnreadCompanies,
+  generateApiKey,
+  generateUniqueId,
+} from "../custom/custom.js";
 import Company from "../models/Company.js";
 import ApiKeys from "../models/Api.js";
 
@@ -234,16 +238,23 @@ export const createUserPost = async (req, res) => {
 export const fetchCompanyPost = async (req, res) => {
   try {
     const data = req.body;
-    const Companies = [];
+
+    let Companies = [];
+
+    const CompanyUnread = await fetchUnreadCompanies(data, Company, User, Mail);
+
+    // console.log(CompanyUnread);
+
     const user = await User.findOne({ _id: data.id });
 
     for (let i = 0; i < user.companies.length; i++) {
       let result = await Company.findOne({ _id: user.companies[i] });
-      Companies.push(result);
+      Companies = [...Companies, result];
     }
 
-    res.status(200).json({ Companies });
+    res.status(200).json({ Companies, CompanyUnread });
   } catch (err) {
+    console.log(err);
     const error = handleErrors(err);
     res.status(200).json({ error });
   }
@@ -257,11 +268,12 @@ export const fetchCompanyMessagesPost = async (req, res) => {
 
     let MailsArr = await Mail.find();
 
-    MailsArr.forEach((mail) => {
-      if (mail.to == user && mail.from == company) {
-        Mails.push(mail);
+    // standard for loop backwards
+    for (let i = MailsArr.length - 1; i >= 0; i--) {
+      if (MailsArr[i].to == user && MailsArr[i].from == company) {
+        Mails.push(MailsArr[i]);
       }
-    });
+    }
 
     if (Mails.length == 0) {
       Mails = [{ emptyMail: "Mailbox is empty" }];
@@ -275,6 +287,7 @@ export const fetchCompanyMessagesPost = async (req, res) => {
 
     res.status(200).json({ Mails, Chats });
   } catch (err) {
+    console.log(err);
     const error = handleErrors(err);
     res.status(200).json({ error });
   }
@@ -283,6 +296,7 @@ export const fetchCompanyMessagesPost = async (req, res) => {
 export const addCompany = async (req, res) => {
   try {
     const { userTempId, userId } = req.body;
+
     let isExist = false;
 
     let ID = "";
@@ -365,6 +379,19 @@ export const mailDeliveryPost = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error });
     console.log(error);
+  }
+};
+
+export const readMailPost = async (req, res) => {
+  try {
+    const { ID } = req.body;
+
+    const mail = await Mail.findOneAndUpdate({ _id: ID }, { status: "read" });
+
+    res.status(200).json({ response: "SUCCESS" });
+  } catch (err) {
+    const error = handleErrors(err);
+    res.status(200).json({ response: "Unexpected error occured" });
   }
 };
 

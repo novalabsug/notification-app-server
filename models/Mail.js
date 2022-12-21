@@ -14,6 +14,10 @@ const mailSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    default: "unread",
+  },
   createdOn: {
     type: String,
     default: new Date(),
