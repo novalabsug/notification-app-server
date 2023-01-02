@@ -13,33 +13,39 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cookieParser());
 
-// app.use(cors());
+app.use(cors());
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://mail-app-frontend.netlify.app/",
-    ],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: [
+//       "http://localhost:3000",
+//       "http://127.0.0.1:3000",
+//       "https://mail-app-frontend.netlify.app/",
+//       "http://172.31.240.1:3000",
+//     ],
+//     credentials: true,
+//   })
+// );
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://mail-app-frontend.netlify.app/"
-  );
-  res.header("Access-Control-Allow-Headers", true);
-  // res.header('Access-Control-Allow-Credentials', 'Content-Type');
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header(
+//     "Access-Control-Allow-Origin",
+//     "http://localhost:3000",
+//     "http://172.31.240.1:3000"
+//   );
+//   res.header(
+//     "Access-Control-Allow-Origin",
+//     "https://mail-app-frontend.netlify.app/"
+//   );
+//   res.header("Access-Control-Allow-Origin", "http://172.31.240.1:3000");
+//   res.header("Access-Control-Allow-Headers", true);
+//   // res.header('Access-Control-Allow-Credentials', 'Content-Type');
+//   res.header(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+//   );
+//   next();
+// });
 
 app.use("/", routes);
 app.use("/api", apiRoutes);
