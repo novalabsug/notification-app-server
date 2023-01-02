@@ -13,27 +13,27 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cookieParser());
 
-app.use(cors());
+// app.use(cors());
 
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    "https://mail-app-frontend.netlify.app",
-    "http://172.31.240.1:3000",
-  ];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
+app.use(
+  cors({
+    origin: ["https://mail-app-frontend.netlify.app"],
+    credentials: true,
+  })
+);
+
+app.use(function (req, res, next) {
   res.header(
     "Access-Control-Allow-Origin",
     "https://mail-app-frontend.netlify.app"
   );
-  res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", true);
-  return next();
+  res.header("Access-Control-Allow-Headers", true);
+  // res.header('Access-Control-Allow-Credentials', 'Content-Type');
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  next();
 });
 
 app.use("/", routes);
