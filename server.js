@@ -13,6 +13,8 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cookieParser());
 
+// app.use(cors());
+
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -36,10 +38,13 @@ app.use("/api", apiRoutes);
 
 const CONNECTION_URL = "mongodb://127.0.0.1:27017/notification-app";
 
+const ATLAS_URL =
+  "mongodb+srv://admin:ppTUUoOgJAhRAePA@cluster0.g9ahihb.mongodb.net/?retryWrites=true&w=majority";
+
 const PORT = process.env.PORT || 3500;
 
 mongoose
-  .connect(CONNECTION_URL, {
+  .connect(ATLAS_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
