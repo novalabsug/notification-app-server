@@ -10,7 +10,7 @@ export async function generateApiKey(companyName) {
   const intArr = [];
   let strApiKey = "";
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 27; i++) {
     let index = Math.floor(Math.random() * strChar.length);
 
     intArr.push(arrChar[index]);
@@ -38,10 +38,10 @@ export const fetchUnreadCompanies = async (data, Company, User, Mail) => {
 
     const user = await User.findOne({ _id: data.id });
 
-    const UserCompanyIds = user.companies;
+    const UserCompanyIds = user?.companies;
 
     for (let i = 0; i < UserCompanyIds.length; i++) {
-      let company = await Company.findOne({ _id: UserCompanyIds[i] });
+      let company = await Company?.findOne({ _id: UserCompanyIds[i] });
       UserCompanies.push(company.companyUsername);
     }
 

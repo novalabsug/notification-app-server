@@ -6,7 +6,7 @@ const { hash, compare } = bcrypt;
 const companySchema = mongoose.Schema({
   companyName: {
     type: String,
-    required: true,
+    required: [true, "Company name is required"],
   },
   companyUsername: {
     type: String,
@@ -16,8 +16,14 @@ const companySchema = mongoose.Schema({
   companyPhone: String,
   companyAddress: String,
   country: String,
-  clientName: String,
-  clientPosition: String,
+  clientName: {
+    type: String,
+    required: [true, "Client name is required"],
+  },
+  clientPosition: {
+    type: String,
+    required: [true, "Position is required"],
+  },
   password: {
     type: String,
     required: true,
@@ -35,8 +41,8 @@ companySchema.pre("save", async function (next) {
 });
 
 // static function to login
-companySchema.statics.login = async function (companyname, password) {
-  const company = await this.findOne({ companyname });
+companySchema.statics.login = async function (username, password) {
+  const company = await this.findOne({ companyUsername: username });
 
   if (company) {
     const auth = await compare(password, company.password);
@@ -45,7 +51,7 @@ companySchema.statics.login = async function (companyname, password) {
     }
     throw Error("Incorrect password");
   }
-  throw Error("Incorrect companyname");
+  throw Error("Incorrect username");
 };
 
 const Company = mongoose.model("company", companySchema);

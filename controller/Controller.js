@@ -149,62 +149,6 @@ export const signinUserPost = async (req, res) => {
   }
 };
 
-export const createCompanyPost = async (req, res) => {
-  try {
-    const { name, country, phone, address, position, clientName, password } =
-      req.body;
-
-    // check if company name exists
-    let companyExists = false;
-    const Companies = await Company.find();
-
-    Companies.forEach((company) => {
-      if (company.companyName == name) {
-        return (companyExists = true);
-      }
-    });
-
-    if (companyExists)
-      return res.status(200).json({ error: "Company name alreasy exists" });
-
-    // generate username for company
-    let usernameArr = [];
-    name
-      .toString()
-      .split("")
-      .forEach((char) => {
-        if (char == " ") return usernameArr.push("-");
-
-        usernameArr.push(char.toLowerCase());
-      });
-
-    let username = usernameArr.join("");
-
-    // create new user
-    const company = await Company.create({
-      companyName: name,
-      companyUsername: "@" + username,
-      companyPhone: phone,
-      companyAddress: address,
-      country,
-      clientName,
-      clientPosition: position,
-      password: await hash(password, 10),
-    });
-
-    // generate api key and store the key
-    let apiKey = await generateApiKey(name);
-
-    const newApiKey = new ApiKeys({ apiKey, company: company._id });
-    await newApiKey.save();
-
-    res.json({ company, apiKey });
-  } catch (err) {
-    const error = handleErrors(err);
-    res.status(200).json({ error });
-  }
-};
-
 // create new user
 export const createUserPost = async (req, res) => {
   try {

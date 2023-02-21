@@ -1,5 +1,6 @@
 import ApiKeys from "../models/Api.js";
 import Company from "../models/Company.js";
+import jwt from "jsonwebtoken";
 
 export const verifyApiKey = async (req, res, next) => {
   try {
@@ -21,7 +22,7 @@ export const verifyApiKey = async (req, res, next) => {
         return (company = el);
       }
 
-      error = "Company not founds";
+      error = "Company not found";
     });
 
     // check company has api keys
@@ -47,5 +48,20 @@ export const verifyApiKey = async (req, res, next) => {
     res.status(200).json({ error });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const verifyToken = async (req, res, next) => {
+  try {
+    const { id, token } = req.body;
+
+    const decoded = jwt.verify(token, "rallen contractor web app token");
+
+    if (decoded.id.toString() !== id.toString())
+      return res.status(500).json({ error: "Authentication failed" });
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ error });
   }
 };
